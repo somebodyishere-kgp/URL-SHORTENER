@@ -1,0 +1,21 @@
+{
+  "name": "url-shortener-system",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "api:dev": "npm run dev -w apps/api",
+    "api:worker": "npm run worker -w apps/api",
+    "web:dev": "npm run dev -w apps/web",
+    "load:test": "k6 run load-tests/redirect.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
