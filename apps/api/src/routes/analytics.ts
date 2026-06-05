@@ -15,6 +15,25 @@ const rangeToInterval = {
   "30d": "30 days"
 } as const;
 
+router.get("/health", async (_req, res, next) => {
+  try {
+    const result = await analyticsDb.query(
+      `SELECT
+        to_regclass('public.click_events') IS NOT NULL AS has_click_events,
+        EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'timescaledb') AS has_timescaledb`
+    );
+
+    res.json({
+      ok: true,
+      databaseConnected: true,
+      hasClickEventsTable: result.rows[0]?.has_click_events ?? false,
+      hasTimescaleExtension: result.rows[0]?.has_timescaledb ?? false
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get("/summary", async (req, res, next) => {
   try {
     const query = summaryQuerySchema.parse(req.query);
@@ -29,7 +48,7 @@ router.get("/summary", async (req, res, next) => {
     );
 
     const series = await analyticsDb.query(
-      `SELECT time_bucket('1 hour', time) AS bucket, count(*)::int AS clicks
+      `SELECT date_trunc('hour', time) AS bucket, count(*)::int AS clicks
        FROM click_events
        WHERE code = $1
          AND time >= now() - $2::interval
@@ -49,6 +68,20 @@ router.get("/summary", async (req, res, next) => {
       }))
     });
   } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "42P01"
+    ) {
+      res.status(503).json({
+        error: "Analytics schema is not initialized",
+        detail: "The click_events table does not exist in TIMESCALE_URL.",
+        fix: "Run db/timescale/001_analytics.sql against your analytics database."
+      });
+      return;
+    }
+
     next(error);
   }
 });
