@@ -1,18 +1,45 @@
-import cors from "cors";
+import cors, { type CorsOptions } from "cors";
 import express, { type ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
+import { env } from "./config/env.js";
 import { analyticsRouter } from "./routes/analytics.js";
 import { linksRouter } from "./routes/links.js";
 import { redirectRouter } from "./routes/redirect.js";
 
+const allowedOrigins = env.FRONTEND_ORIGINS.split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions: CorsOptions = {
+  origin(origin, callback) {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    callback(null, allowedOrigins.includes(origin));
+  },
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+  optionsSuccessStatus: 204
+};
+
 export function createApp() {
   const app = express();
 
-  app.use(cors());
+  app.use(cors(corsOptions));
+  app.options(/.*/, cors(corsOptions));
   app.use(express.json());
 
   app.get("/health", (_req, res) => {
-    res.json({ ok: true });
+    res.json({
+      ok: true,
+      service: "api",
+      analyticsDriver: env.ANALYTICS_DRIVER,
+      workerInApi: env.RUN_WORKER_IN_API,
+      frontendOrigins: allowedOrigins,
+      timestamp: new Date().toISOString()
+    });
   });
 
   app.use("/api/links", linksRouter);

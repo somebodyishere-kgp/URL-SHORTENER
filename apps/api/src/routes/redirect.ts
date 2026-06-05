@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { Router } from "express";
-import { enqueueClickEvent } from "../queue/analyticsQueue.js";
+import { recordClickEvent } from "../services/analyticsRecorder.js";
 import { resolveLink } from "../services/links.js";
 import { slidingWindowRateLimiter } from "../services/rateLimiter.js";
 
@@ -20,7 +20,7 @@ router.get("/:code", slidingWindowRateLimiter, async (req, res, next) => {
       return;
     }
 
-    void enqueueClickEvent({
+    void recordClickEvent({
       linkId: link.id,
       code,
       ip: ipHash(req.ip),
@@ -28,7 +28,7 @@ router.get("/:code", slidingWindowRateLimiter, async (req, res, next) => {
       referer: req.header("referer"),
       clickedAt: new Date().toISOString()
     }).catch((error) => {
-      console.error("Failed to enqueue analytics event", error);
+      console.error("Failed to record analytics event", error);
     });
 
     res.redirect(301, link.targetUrl);
