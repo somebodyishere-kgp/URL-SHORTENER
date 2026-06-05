@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { Router } from "express";
+import { env } from "../config/env.js";
 import { recordClickEvent } from "../services/analyticsRecorder.js";
 import { resolveLink } from "../services/links.js";
 import { slidingWindowRateLimiter } from "../services/rateLimiter.js";
@@ -31,7 +32,7 @@ router.get("/:code", slidingWindowRateLimiter, async (req, res, next) => {
       console.error("Failed to record analytics event", error);
     });
 
-    res.redirect(301, link.targetUrl);
+    res.redirect(env.REDIRECT_STATUS_CODE, link.targetUrl);
   } catch (error) {
     next(error);
   }

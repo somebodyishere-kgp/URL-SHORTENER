@@ -37,6 +37,7 @@ export function createApp() {
       service: "api",
       analyticsDriver: env.ANALYTICS_DRIVER,
       workerInApi: env.RUN_WORKER_IN_API,
+      redirectStatusCode: env.REDIRECT_STATUS_CODE,
       frontendOrigins: allowedOrigins,
       timestamp: new Date().toISOString()
     });

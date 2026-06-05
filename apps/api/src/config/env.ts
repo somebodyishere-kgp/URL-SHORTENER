@@ -21,6 +21,7 @@ const schema = z.object({
   REDIS_URL: z.string().min(1),
   ANALYTICS_DRIVER: z.enum(["queue", "direct"]).default("queue"),
   RUN_WORKER_IN_API: booleanFromEnv.default(false),
+  REDIRECT_STATUS_CODE: z.coerce.number().pipe(z.union([z.literal(301), z.literal(302)])).default(302),
   CACHE_TTL_SECONDS: z.coerce.number().default(3600),
   RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().default(60),
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(120)

@@ -30,6 +30,8 @@ services:
         value: direct
       - key: RUN_WORKER_IN_API
         value: false
+      - key: REDIRECT_STATUS_CODE
+        value: 302
       - key: CACHE_TTL_SECONDS
         value: 3600
       - key: RATE_LIMIT_WINDOW_SECONDS
