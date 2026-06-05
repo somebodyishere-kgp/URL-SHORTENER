@@ -16,6 +16,14 @@ services:
         sync: false
       - key: TIMESCALE_URL
         sync: false
+      - key: DATABASE_SSL_REJECT_UNAUTHORIZED
+        value: false
+      - key: TIMESCALE_SSL_REJECT_UNAUTHORIZED
+        value: false
+      - key: DATABASE_CA_CERT
+        sync: false
+      - key: TIMESCALE_CA_CERT
+        sync: false
       - key: REDIS_URL
         sync: false
       - key: ANALYTICS_DRIVER
