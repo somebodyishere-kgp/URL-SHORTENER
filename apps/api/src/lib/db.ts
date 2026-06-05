@@ -6,6 +6,18 @@ function isLocalDatabaseHost(connectionString: string): boolean {
   return ["localhost", "127.0.0.1", "::1", "postgres", "timescaledb"].includes(host);
 }
 
+function normalizeConnectionString(connectionString: string): string {
+  const url = new URL(connectionString);
+
+  // node-postgres lets sslmode query params override the explicit ssl object.
+  // Keep TLS behavior controlled by env vars instead.
+  for (const key of ["sslmode", "sslcert", "sslkey", "sslrootcert"]) {
+    url.searchParams.delete(key);
+  }
+
+  return url.toString();
+}
+
 function createPool(
   connectionString: string,
   max: number,
@@ -13,11 +25,12 @@ function createPool(
   ca?: string
 ): pg.Pool {
   const normalizedCa = ca?.replace(/\\n/g, "\n");
+  const isLocal = isLocalDatabaseHost(connectionString);
 
   return new pg.Pool({
-    connectionString,
+    connectionString: normalizeConnectionString(connectionString),
     max,
-    ssl: isLocalDatabaseHost(connectionString)
+    ssl: isLocal
       ? undefined
       : {
           ca: normalizedCa,
