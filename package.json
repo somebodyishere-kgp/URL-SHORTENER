@@ -9,13 +9,17 @@
   "scripts": {
     "dev": "npm run dev --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
+    "build:api": "npm run build -w apps/api",
+    "build:web": "npm run build -w apps/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "api:dev": "npm run dev -w apps/api",
     "api:worker": "npm run worker -w apps/api",
+    "api:start": "npm run start -w apps/api",
+    "worker:start": "npm run worker:start -w apps/api",
     "web:dev": "npm run dev -w apps/web",
     "load:test": "k6 run load-tests/redirect.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   }
 }

@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: url-shortener-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build:api
+    startCommand: npm run api:start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: TIMESCALE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: RUN_WORKER_IN_API
+        value: true
+      - key: CACHE_TTL_SECONDS
+        value: 3600
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: 60
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 120

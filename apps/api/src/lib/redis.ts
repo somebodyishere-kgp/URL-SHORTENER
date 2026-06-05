@@ -15,5 +15,6 @@ export const bullConnection = {
   username: redisUrl.username || undefined,
   password: redisUrl.password || undefined,
   db: Number(redisUrl.pathname.replace("/", "") || 0),
+  tls: redisUrl.protocol === "rediss:" ? {} : undefined,
   maxRetriesPerRequest: null
 };

@@ -7,6 +7,7 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1),
   TIMESCALE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
+  RUN_WORKER_IN_API: z.coerce.boolean().default(false),
   CACHE_TTL_SECONDS: z.coerce.number().default(3600),
   RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().default(60),
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(120)
